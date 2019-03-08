@@ -2,12 +2,11 @@
 FROM ubuntu:latest
 
 RUN sed -i 's#archive.ubuntu.com#mirrors.aliyun.com#' /etc/apt/sources.list && \
-    apt update && \
-    apt install -y git build-essential bison libevent-dev libjemalloc-dev libmysqlclient-dev libpcre3-dev libpq-dev libsqlite3-dev libssl-dev libz-dev libgtest-dev cmake libicu-dev \
+    apt-get update && \
+    apt-get install -y libevent-2.1-6 libjemalloc1 libmysqlclient20 libpcre3 libpq5 libsqlite3-0 libssl1.1 zlib1g libicu60 \
         --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-COPY build/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY bin/driver bin/portbind /usr/bin/
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/driver"]
