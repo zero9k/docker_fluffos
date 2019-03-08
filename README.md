@@ -1,47 +1,63 @@
 # Docker FluffOs
 
-### Intro
+### 0. Intro
 
 Docker 镜像 : FluffOS v2019 的 Ubuntu 编译环境。
 
-此项目参考了 https://github.com/fabletang/docker-fluffos ，更新为可以编译 FluffOs v2019 。<br> 
+此项目参考了 https://github.com/lostsnow/docker-fluffos ，更新为可以编译 FluffOs v2019 。
 
 ### 1. Build compile image
 
-  建立为编译 fluffos 源码的 docker 镜像，确定已经安装了 docker 1.12+ 和 git 。
->以下的命令可能需要 `su root` 或者 `sudo` 。
+建立为编译 fluffos 源码的 docker 镜像，确定已经安装了 docker 1.12+ 和 git 。
+>以下的命令可能需要 `su root` 或者 `sudo` ，假设我们在 `/XXXX/` 目录下操作。真正操作时，记得将下面代码中 `/XXXX/` 替换为相应的目录，即上面代码中你建立 `docker` 目录位置的绝对目录。
 ```bash
+cd /XXXX/
 mkdir docker
 cd docker 
 git clone https://github.com/zero9k/docker_fluffos.git
 cd docker_fluffos
 docker build -t zero9k/fluffos_build ./build
 ```
-成功后，输入 `docker images` 指令可以看到 REPOSITORY 下 显示 zero9k/fluffos_build 。
+成功后，输入 `docker images` 指令可以看到 REPOSITORY 下增加了 ubuntu 和 zero9k/fluffos_build 两个 image，类似下面这样：
+```bash
+$ docker images
+REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+zero9k/fluffos_build   latest              3b3444136461        3 hours ago         521MB
+ubuntu                 latest              47b19964fb50        4 weeks ago         88.1MB
+$
+```
 
 ### 2. Compile driver
 
-  下载 fluffos 源码。
+下载 fluffos 源码。
 ```bash
-cd .. 
+cd /XXXX/docker/
 git clone https://github.com/fluffos/fluffos.git
 ```
-  利用镜像 fluffos_build 编译 fluffos 源码，生成驱动, 最终产生包括 driver 的 2 个二进制文件。 
->将下面代码中 `XXXX` 替换为相应的目录，即上面代码中你建立 `docker` 目录位置的绝对目录。
+利用镜像 fluffos_build 编译 fluffos 源码，生成驱动, 最终产生包括 driver 的 2 个二进制文件。 
 
 ```bash
 docker run --rm -v /XXXX/docker:/opt/docker zero9k/fluffos_build
 ```
-成功后，输入 `ls -a docker_fluffos/bin/` 指令可以看到 `driver` 和 `portbind` 两个二进制文件，注意日期，看是否新生成的。
+成功后，输入 `ls -la docker_fluffos/bin/` 指令可以看到 `driver` 和 `portbind` 两个二进制文件，注意日期，看是否新生成的。
 (因为此项目已经包括编译好的二进制文件，当然你也可以直接使用，忽略以上步骤。^_^)
 
 ### 3. Build driver image
 
-  生成 fluffos 驱动镜像，实际就是把 2 个二进制文件打包进 docker image (你在第 1 步中 build 的 zero9k/fluffos_build)，同时安装其运行需要的依赖库。
+  生成 fluffos 驱动镜像，实际就是把 2 个二进制文件 copy 进 docker image ，同时安装其运行需要的依赖库。
 ```bash
+cd /XXXX/docker/
 docker build -t zero9k/fluffos ./docker_fluffos
 ``` 
-成功后，输入 `docker images` 指令可以看到 REPOSITORY下 显示 zero9k/fluffos 。
+成功后，输入 `docker images` 指令可以看到 REPOSITORY 下增加了 zero9k/fluffos，类似下面这样：
+```
+$ docker images
+REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
+zero9k/fluffos         latest              cf1eda359956        2 hours ago         133MB
+zero9k/fluffos_build   latest              3b3444136461        3 hours ago         521MB
+ubuntu                 latest              47b19964fb50        4 weeks ago         88.1MB
+$
+```
 
 ### 4. run mudlib
 
