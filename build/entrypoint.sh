@@ -2,13 +2,13 @@
 
 if [ ! -d "/fluffos-build.lock" ]; then
     #   Build FluffOs, package_uids disabled
-    cd /opt/projects/fluffos/
+    cd /opt/fluffos/
     git checkout v2019
     mkdir build && cd build
     cmake -DPACKAGE_UIDS=OFF ..
     make
 
-    cp ./src/{driver,portbind} /opt/projects/docker_fluffos/bin/
+    cp ./src/{driver,portbind} /opt/docker_fluffos/bin/
 
     touch /fluffos-build.lock
 fi
