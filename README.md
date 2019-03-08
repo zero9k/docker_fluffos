@@ -44,16 +44,16 @@ docker run --rm -v /XXXX/docker:/opt/docker zero9k/fluffos_build
 
 ### 3. Build driver image
 
-  生成 fluffos 驱动镜像，实际就是把 2 个二进制文件 copy 进 docker image ，同时安装其运行需要的依赖库。
+生成 fluffos 驱动镜像，实际就是把 2 个二进制文件 copy 进 docker image ，同时安装其运行需要的依赖库。
 ```bash
-cd /XXXX/docker/
-docker build -t zero9k/fluffos ./docker_fluffos
+cd /XXXX/docker/docker_fluffos
+docker build -t zero9k/fluffos .
 ``` 
 成功后，输入 `docker images` 指令可以看到 REPOSITORY 下增加了 zero9k/fluffos，类似下面这样：
 ```
 $ docker images
 REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-zero9k/fluffos         latest              cf1eda359956        2 hours ago         133MB
+zero9k/fluffos         latest              cf1eda359956        2 hours ago         143MB
 zero9k/fluffos_build   latest              3b3444136461        3 hours ago         521MB
 ubuntu                 latest              47b19964fb50        4 weeks ago         88.1MB
 $
@@ -61,7 +61,7 @@ $
 
 ### 4. run mudlib
 
-  运行 MUD ，即用 fluffos 驱动 mudlib ，比如 fy/xkx/xyj 等(https://github.com/mudchina/ 有一些mudlib)。以下的代码以 fy4 为参考，可能需要修改源码 (那涉及到如何让 fluffos 可以跑 mudos v22 的老lib，不在本文讨论范围内，请自行学习)。
+运行 MUD ，即用 fluffos 驱动 mudlib ，比如 fy/xkx/xyj 等(https://github.com/mudchina/ 有一些mudlib)。以下的代码以 fy4 为参考，可能需要修改源码 (那涉及到如何让 fluffos 可以跑 mudos v22 的老lib，不在本文讨论范围内，请自行学习)。
 >准备好修改好的 config 文件 (fluffos 源码中有样例，根据需求修改)，假设位置为 `/home/cfg/config.fy` ，假设修改后端口为 6666。
 ```bash
 cd docker
@@ -71,7 +71,7 @@ git clone https://github.com/huangleon/fy4.git
 cp /home/cfg/config.fy fy4/config.fy
 docker run -d --name fy4 \
     -p 6666:6666 \
-    -v XXXX/docker/mudlib/fy4/:/opt/docker \
-    zero9k/fluffos /opt/projects/config.fy
+    -v XXXX/docker/mudlib/fy4:/opt/docker \
+    zero9k/fluffos /opt/docker/config.fy
 ```
 成功后，输入 `docker ps` 指令可以看到 `0.0.0.0:6666->6666/tcp`，失败可以输入 `docker logs -f fy4` 指令查看 log，也可以进一步查看 mudlib 的 debug.log (比如 `tail -f /XXXX/docker/mudlib/fy4/log/debug.log`)。
