@@ -7,6 +7,7 @@ RUN sed -i 's#archive.ubuntu.com#mirrors.aliyun.com#' /etc/apt/sources.list && \
         --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-#   COPY entrypoint.sh /entrypoint.sh
+COPY build/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-#   ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
